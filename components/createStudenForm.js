@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 const createStudenForm = () => {
+  
   const [name, setname] = useState("");
   const [lastname, setlastname] = useState("");
   const [IDnumber, setIDnumber] = useState("");
@@ -21,6 +22,13 @@ const createStudenForm = () => {
     setIDnumber('')
   console.log(response.status);
   }
+  const numero=(e)=>{
+    if(!isNaN(e.target.value)){
+      setIDnumber(e.target.value);
+    }else{
+      alert('Por favor, ingrese solo números.');
+    }
+  }
   return (
     <div>
       <form onSubmit={onSubmit} method="post">
@@ -29,7 +37,6 @@ const createStudenForm = () => {
         <br></br>
         <input
           type="text"
-          id="nombre"
           name="name"
           required
           value={name}
@@ -42,7 +49,6 @@ const createStudenForm = () => {
         <br></br>
         <input
           type="text"
-          id="Apellido"
           name="lastname"
           required
           value={lastname}
@@ -59,9 +65,7 @@ const createStudenForm = () => {
           name="IDnumber"
           required
           value={IDnumber}
-          onChange={(e) => {
-            setIDnumber(e.target.value);
-          }}
+          onChange={numero}
         />
         <br></br>
         <button type="submit">Crear estudiante</button>
