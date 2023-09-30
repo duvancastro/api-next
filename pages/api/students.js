@@ -1,15 +1,35 @@
 import {createStudent} from "./logicas/logicaStudent";
 import {getStudents} from "./logicas/logicaStudent";
+import { getStudentIDnumber } from "./logicas/logicaStudent";
 export default async function handler(req, res) {
-  if (req.method === "POST") {
+  switch(req.method){
+    case'POST':
     const data = req.body;
     const result = await createStudent(data);
     postResponse(result,res);
-  }else if(req.method==="GET"){
-    const result = await getStudents();
-    getResponse(result,res);
+    break;
+    case'GET':
+    const {IDnumber}=req.query
+    console.log(IDnumber)
+    if (IDnumber) {
+      const result= await getStudentIDnumber(IDnumber)
+      getResponse(result,res)
+    } else {
+      
+      const result = await getStudents();
+      getResponse(result,res);
+    }
+    break;
+    case'PUT':
+  
+    break;
+    default:
+      res.status(500).json({ error: "Method not allowed" });
+      break;
+
 
   }
+  
 }
 function getResponse(result,res){
   switch(result.status){

@@ -24,7 +24,6 @@ const TablaEstudiantes = () => {
       <table>
         <thead>
           <tr>
-            <th>ID</th>
             <th>Nombre</th>
             <th>Apellido</th>
             <th>Numero de Doc</th>
@@ -32,12 +31,11 @@ const TablaEstudiantes = () => {
           </tr>
         </thead>
         <tbody>
-          {estudiantes.map((estudiante) => (
-            <tr key={estudiante.id}>
-              <td>{estudiante.id}</td>
-              <td>{estudiante.nombre}</td>
-              <td>{estudiante.apellido}</td>
-              <td>{estudiante.numeroDoc}</td>
+          {estudiantes.map((student) => (
+            <tr key={student.ID}>
+              <td>{student.name}</td>
+              <td>{student.lastName}</td>
+              <td>{student.IDnumber}</td>
               {/* Agrega más celdas según tus datos */}
             </tr>
           ))}

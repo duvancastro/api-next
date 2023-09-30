@@ -1,7 +1,8 @@
 import React from 'react'
 // import CreateStudenForm from '../components/createStudenForm'
 // import CreateComputer from '../components/createComputer';
-import TablaEstudiantes from '../components/tableStudents';
+// import TablaEstudiantes from '../components/tableStudents';
+import SaerchStudentIDnumber from '../components/searchStudentIDnumber'
 const createStudentPage = () => {
   return (
     <div>
@@ -9,7 +10,8 @@ const createStudentPage = () => {
       <h1>Create Computer</h1>
       {/* <CreateStudenForm /> */}
       {/* <CreateComputer/> */}
-      <TablaEstudiantes/>
+      {/* <TablaEstudiantes/> */}
+      <SaerchStudentIDnumber/>
 
     </div>
   );
