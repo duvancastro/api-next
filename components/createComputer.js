@@ -13,7 +13,7 @@ const createComputer = () => {
     };
     console.log(data);
 
-    const response = await fetch("/api/postComputer", {
+    const response = await fetch("/api/computer", {
       method: "POST",
       body: JSON.stringify(data),
     });

@@ -1,17 +1,25 @@
 import pool from "../../../conexion/bd";
-
+async function existing(IDnumber) {
+  const checkStudentSQL = "SELECT * FROM `students` WHERE `IDnumber` = ?";
+  const checkStudentValues = [IDnumber];
+  // Obten una conexión del pool
+  const connection = await pool.getConnection();
+  const existingStudent = await connection.query(
+    checkStudentSQL,
+    checkStudentValues
+  );
+  // Libera la conexión de vuelta al pool
+  connection.release();
+  return existingStudent;
+}
 const createStudent = async (data) => {
   try {
-    const inf = JSON.parse(data);
-    const checkStudentSQL = "SELECT * FROM `students` WHERE `IDnumber` = ?";
-    const checkStudentValues = [inf.IDnumber];
+    // JSON.parse(
+    const inf = data;
 
     // Obten una conexión del pool
     const connection = await pool.getConnection();
-    const existingStudent = await connection.query(
-      checkStudentSQL,
-      checkStudentValues
-    );
+    const existingStudent = await existing(inf.IDnumber);
     if (existingStudent[0].length > 0) {
       console.log(`Estudiante ya existe, ID: ${existingStudent[0][0].ID}`);
       connection.release();
@@ -79,22 +87,73 @@ const getStudentIDnumber = async (IDnumber) => {
     throw { status: 500, message: `ERROR interno en el server: ${err}` };
   }
 };
-
-const putStudent = async (ID, data) => {
+const patchStudent = async (data) => {
   try {
-    const inf = JSON.parse(data);
-    const sql = "UPDATE students SET name=?, lastName=?, IDnumber=? WHERE ID=?";
-    const value = [data.name, data.lastName, data.IDnumber, ID];
-    const result = await pool.query(sql, value);
-    console.log(result);
-    return {
-      status: 200,
-      message: `Estudiante actualizado con éxito`,
-      data: result,
-    };
+    // Obten una conexión del pool
+    const connection = await pool.getConnection();
+    const inf = data;
+    const existingStudent = await existing(inf.IDnumber);
+    console.log(`existingStudent: ${existingStudent[0]}`);
+    if (existingStudent[0].length > 0) {
+      const sql = `UPDATE students SET ${Object.entries(inf).reduce(
+        (acc, [key, value]) =>
+          key !== "IDnumber"
+            ? acc.length > 0
+              ? `${acc}, ${key} = '${value}'`
+              : `${key} = '${value}'`
+            : acc,
+        ""
+      )}WHERE IDnumber = ${inf.IDnumber}`;
+
+      console.log(sql);
+
+      const update = await connection.query(sql);
+      // Libera la conexión de vuelta al pool
+      connection.release();
+      console.time(update);
+      console.timeEnd(update);
+      return {
+        status: 200,
+        message: `Estudiante actualizado con éxito`,
+      };
+    } else {
+      console.log(`Estudiante no existe`);
+      connection.release();
+      return { status: 404, message: "El estudiante no existe" };
+    }
   } catch (err) {
     console.error(`ERROR interno en el server:: ${err}`);
     throw { status: 500, message: `ERROR interno en el server: ${err}` };
   }
 };
-export { createStudent, getStudents, getStudentIDnumber };
+const deleteStudent = async (IDnumber) => {
+  try {
+    // Obten una conexión del pool
+    const connection = await pool.getConnection();
+    const existingStudent = await existing(IDnumber);
+    connection.release();
+    if (existingStudent[0].length > 0) {
+      const sql = "DELETE FROM `students` WHERE `IDnumber` =?";
+      const values = [IDnumber];
+      const result = await connection.query(sql, values);
+      connection.release();
+      return {
+        status: 200,
+        message: `Estudiante eliminado con éxito`,
+      };
+    } else {
+      console.log(`Estudiante no existe, `);
+      return { status: 404, message: "El estudiante no existe" };
+    }
+  } catch (err) {
+    console.error(`ERROR interno en el server:: ${err}`);
+    throw { status: 500, message: `ERROR interno en el server: ${err}` };
+  }
+};
+export {
+  createStudent,
+  getStudents,
+  getStudentIDnumber,
+  patchStudent,
+  deleteStudent,
+};
